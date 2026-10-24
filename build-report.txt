@@ -1,0 +1,13 @@
+Build Succeeded: 285237275 bytes, 0 errors, 12 warnings, 70.4s → /github/workspace/build/Android/PushUpAdventure.apk
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
+[Warning] Postprocess built player: Compressed texture flame_hero is used as icon. This might compromise visual quality of the final image. Uncompressed format might be considered as better import option.
