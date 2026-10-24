@@ -80,15 +80,39 @@ namespace PushupAdventure.EditorTools
                     options = BuildOptions.None,
                 });
                 var s = report.summary;
-                Debug.Log(string.Format("Build {0}: {1} bytes, {2} errors, {3} warnings, {4:0.0}s → {5}",
-                    s.result, s.totalSize, s.totalErrors, s.totalWarnings, s.totalTime.TotalSeconds, path));
+                var line = string.Format("Build {0}: {1} bytes, {2} errors, {3} warnings, {4:0.0}s → {5}",
+                    s.result, s.totalSize, s.totalErrors, s.totalWarnings, s.totalTime.TotalSeconds, path);
+                Debug.Log(line);
+                WriteReport(line, report);
                 if (exit) EditorApplication.Exit(s.result == BuildResult.Succeeded ? 0 : 101);
             }
             catch (Exception e)
             {
                 Debug.LogException(e);
+                WriteReport("Build threw: " + e, null);
                 if (exit) EditorApplication.Exit(102);
                 else throw;
+            }
+        }
+
+        /// <summary>build/build-report.txt: the result and every error and
+        /// warning, for CI to keep when the editor log is out of reach.</summary>
+        static void WriteReport(string head, BuildReport report)
+        {
+            try
+            {
+                var lines = new List<string> { head };
+                if (report != null)
+                    foreach (var step in report.steps)
+                    foreach (var m in step.messages)
+                        if (m.type != LogType.Log)
+                            lines.Add(string.Format("[{0}] {1}: {2}", m.type, step.name, m.content));
+                Directory.CreateDirectory("build");
+                File.WriteAllLines("build/build-report.txt", lines);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
         }
 

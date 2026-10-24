@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  checks: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -48,13 +52,23 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           testMode: editmode
+          artifactsPath: artifacts
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Edit mode test results
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: Test results
-          path: ${{ steps.tests.outputs.artifactsPath }}
+          path: artifacts
+          if-no-files-found: ignore
+      - name: Push logs to the ci-logs-test branch
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/scripts/push-logs.sh test
 
   android:
     name: Build APK (IL2CPP, ARM64)
@@ -76,6 +90,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           targetPlatform: Android
           androidExportType: androidPackage
@@ -86,14 +101,17 @@ jobs:
         with:
           name: PushUpAdventure-apk
           path: build/Android
+      - name: Push logs to the ci-logs-android branch
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/scripts/push-logs.sh android
 
   # The same game for the browser, to preview and record it without a phone.
   webgl:
     name: Build WebGL preview
     needs: test
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -106,6 +124,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           targetPlatform: WebGL
           buildName: PushUpAdventure
@@ -114,6 +133,11 @@ jobs:
         with:
           name: PushUpAdventure-webgl
           path: build/WebGL
+      - name: Push logs to the ci-logs-webgl branch
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash .github/scripts/push-logs.sh webgl
       # The preview also goes to the webgl-preview branch, so it can be
       # fetched with plain git, served anywhere and recorded.
       - name: Publish preview to the webgl-preview branch
