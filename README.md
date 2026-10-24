@@ -72,7 +72,7 @@ builds the whole interface in code.
 
 ## Open it in Unity
 
-1. Install Unity **2022.3.67f2** with **Android Build Support** (including the
+1. Install Unity **2022.3.62f2** with **Android Build Support** (including the
    Android SDK, NDK and OpenJDK) from Unity Hub.
 2. **Open** this folder in Unity Hub.
 3. Press Play. Space, Enter or a tap is one pushup.
