@@ -170,14 +170,18 @@ namespace PushupAdventure.Tests
         [Test]
         public void ArabicLettersJoinAndReadRightToLeft()
         {
-            // باب: initial beh, final alef, isolated beh (alef never joins left).
-            Assert.AreEqual("ﺑﺎﺏ", ArabicShaper.Shape("باب"));
+            // باب: initial beh, final alef, then a lone beh (alef never joins
+            // left), which keeps its own code point: the fonts have no isolated forms.
+            Assert.AreEqual("\uFE91\uFE8E\u0628", ArabicShaper.Shape("باب"));
             // لا is one ligature.
             Assert.AreEqual("ﻻ", ArabicShaper.Shape("لا"));
             // Marks are dropped; numbers and Latin keep their order in the visual line.
             Assert.AreEqual(ArabicShaper.Shape("كَ"), ArabicShaper.Shape("ك"));
+            // انتصار: lone alef, initial noon, medial teh and sad, final alef,
+            // lone reh. No FE8D-style isolated forms, which the fonts lack.
+            Assert.AreEqual("\u0627\uFEE7\uFE98\uFEBC\uFE8E\u0631", ArabicShaper.Shape("انتصار"));
             // A keyword mark between letters does not break the join.
-            Assert.AreEqual("\uFE91" + ArabicShaper.KeyOpen + "\uFE8E\uFE8F",
+            Assert.AreEqual("\uFE91" + ArabicShaper.KeyOpen + "\uFE8E\u0628",
                 ArabicShaper.Shape("ب" + ArabicShaper.KeyOpen + "اب"));
             var line = ArabicShaper.Line("اليوم 12");
             Assert.IsTrue(line.StartsWith("12 "), line);

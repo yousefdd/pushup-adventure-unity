@@ -148,12 +148,15 @@ namespace PushupAdventure.Core
                     continue;
                 }
                 var nextJoins = JoinsLeft(c) && Row(After(t, i)) >= 0;
+                // Isolated letters keep their own code point: the bundled fonts
+                // draw the isolated shape there and have no FE8D-style isolated
+                // forms, so those would vanish.
                 int form;
                 if (prevJoins && nextJoins) form = Forms[r, 4];
                 else if (prevJoins) form = Forms[r, 2];
                 else if (nextJoins) form = Forms[r, 3];
-                else form = Forms[r, 1];
-                o.Append((char)(form != 0 ? form : Forms[r, 1]));
+                else form = c;
+                o.Append((char)(form != 0 ? form : c));
             }
             return o.ToString();
         }
