@@ -19,7 +19,18 @@ namespace PushupAdventure.EditorTools
         const string AppId = "com.yousefdd.pushupadventure";
 
         [MenuItem("Push Up Adventure/Build Android APK (IL2CPP)")]
-        public static void BuildFromMenu() => Build("Builds/Android/PushUpAdventure.apk", null, null, false);
+        public static void BuildFromMenu() => Build(BuildTarget.Android, "Builds/Android/PushUpAdventure.apk", null, null, false);
+
+        /// <summary>A browser build of the same game (WebGL also compiles
+        /// through IL2CPP), used to preview and record it without a phone.</summary>
+        public static void BuildWebGLFromCommandLine()
+        {
+            var args = Args();
+            string path;
+            args.TryGetValue("customBuildPath", out path);
+            if (string.IsNullOrEmpty(path)) path = "build/WebGL/PushUpAdventure";
+            Build(BuildTarget.WebGL, path, null, null, true);
+        }
 
         [MenuItem("Push Up Adventure/Prepare Project")]
         public static void PrepareFromMenu()
@@ -40,10 +51,10 @@ namespace PushupAdventure.EditorTools
             args.TryGetValue("androidVersionCode", out code);
             if (string.IsNullOrEmpty(path)) path = "build/Android/PushUpAdventure.apk";
             if (Directory.Exists(path) || !Path.HasExtension(path)) path = Path.Combine(path, "PushUpAdventure.apk");
-            Build(path, version, code, true);
+            Build(BuildTarget.Android, path, version, code, true);
         }
 
-        static void Build(string path, string version, string code, bool exit)
+        static void Build(BuildTarget target, string path, string version, string code, bool exit)
         {
             try
             {
@@ -52,15 +63,20 @@ namespace PushupAdventure.EditorTools
                 if (!string.IsNullOrEmpty(version) && version != "none") PlayerSettings.bundleVersion = version;
                 int vc;
                 if (int.TryParse(code, out vc) && vc > 0) PlayerSettings.Android.bundleVersionCode = vc;
-                EditorUserBuildSettings.buildAppBundle = path.EndsWith(".aab", StringComparison.OrdinalIgnoreCase);
+                var group = target == BuildTarget.WebGL ? BuildTargetGroup.WebGL : BuildTargetGroup.Android;
+                if (target == BuildTarget.Android)
+                    EditorUserBuildSettings.buildAppBundle = path.EndsWith(".aab", StringComparison.OrdinalIgnoreCase);
+                else
+                    // Plain files, so any static server can host the preview.
+                    PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
                 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path)));
 
                 var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
                     scenes = new[] { ScenePath },
                     locationPathName = path,
-                    target = BuildTarget.Android,
-                    targetGroup = BuildTargetGroup.Android,
+                    target = target,
+                    targetGroup = group,
                     options = BuildOptions.None,
                 });
                 var s = report.summary;
