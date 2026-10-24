@@ -7,19 +7,19 @@ using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace DiceQuest.EditorTools
+namespace PushupAdventure.EditorTools
 {
     /// <summary>Builds the Android APK with IL2CPP (C# compiled to native ARM64
     /// machine code). The CI calls BuildFromCommandLine; in the editor use the
-    /// "Dice Quest" menu.</summary>
+    /// "Push Up Adventure" menu.</summary>
     public static class BuildScript
     {
         const string ScenePath = "Assets/Scenes/Main.unity";
         const string IconPath = "Assets/Resources/Art/flame_hero.png";
-        const string AppId = "com.yousefdd.dicequest";
+        const string AppId = "com.yousefdd.pushupadventure";
 
-        [MenuItem("Dice Quest/Build Android APK (IL2CPP)")]
-        public static void BuildFromMenu() => Build(BuildTarget.Android, "Builds/Android/DiceQuest.apk", null, null, false);
+        [MenuItem("Push Up Adventure/Build Android APK (IL2CPP)")]
+        public static void BuildFromMenu() => Build(BuildTarget.Android, "Builds/Android/PushUpAdventure.apk", null, null, false);
 
         /// <summary>A browser build of the same game (WebGL also compiles
         /// through IL2CPP), used to preview and record it without a phone.</summary>
@@ -28,11 +28,11 @@ namespace DiceQuest.EditorTools
             var args = Args();
             string path;
             args.TryGetValue("customBuildPath", out path);
-            if (string.IsNullOrEmpty(path)) path = "build/WebGL/DiceQuest";
+            if (string.IsNullOrEmpty(path)) path = "build/WebGL/PushUpAdventure";
             Build(BuildTarget.WebGL, path, null, null, true);
         }
 
-        [MenuItem("Dice Quest/Prepare Project")]
+        [MenuItem("Push Up Adventure/Prepare Project")]
         public static void PrepareFromMenu()
         {
             EnsureScene();
@@ -49,8 +49,8 @@ namespace DiceQuest.EditorTools
             args.TryGetValue("customBuildPath", out path);
             args.TryGetValue("buildVersion", out version);
             args.TryGetValue("androidVersionCode", out code);
-            if (string.IsNullOrEmpty(path)) path = "build/Android/DiceQuest.apk";
-            if (Directory.Exists(path) || !Path.HasExtension(path)) path = Path.Combine(path, "DiceQuest.apk");
+            if (string.IsNullOrEmpty(path)) path = "build/Android/PushUpAdventure.apk";
+            if (Directory.Exists(path) || !Path.HasExtension(path)) path = Path.Combine(path, "PushUpAdventure.apk");
             Build(BuildTarget.Android, path, version, code, true);
         }
 
@@ -133,7 +133,7 @@ namespace DiceQuest.EditorTools
         static void ConfigurePlayer()
         {
             PlayerSettings.companyName = "yousefdd";
-            PlayerSettings.productName = "Dice Quest";
+            PlayerSettings.productName = "Push Up Adventure";
             PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, AppId);
             if (string.IsNullOrEmpty(PlayerSettings.bundleVersion) || PlayerSettings.bundleVersion == "0.1")
                 PlayerSettings.bundleVersion = "1.0.0";

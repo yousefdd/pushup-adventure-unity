@@ -2,157 +2,166 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DiceQuest.Core;
 using NUnit.Framework;
+using PushupAdventure.Core;
 
-namespace DiceQuest.Tests
+namespace PushupAdventure.Tests
 {
     public class CoreTests
     {
-        /// <summary>Plays a whole run the simple way: roll, and in a shop heal
-        /// when low, else buy what makes the hero stronger.</summary>
-        public static DiceRun Play(string hero, int seed, int maxRolls = 2000)
+        static Battle FightWith(FoeAbility a, double rngValue = 0.5)
         {
-            var run = new DiceRun(hero, seed);
-            while (!run.Over && run.Rolls < maxRolls)
+            foreach (var ch in WorldData.Chapters)
             {
-                var o = run.Land(run.Roll());
-                if (o.Kind != OutcomeKind.Shop) continue;
-                var h = run.Hero;
-                foreach (var i in o.Shop.OrderBy(i => IsHeal(i) ? (h.Hp * 2 < h.Max ? 0 : 2) : 1))
+                for (var i = 0; i < ch.Foes.Length; i++)
                 {
-                    if (IsHeal(i) && h.Hp * 10 > h.Max * 7) continue;
-                    run.Buy(i);
+                    if (ch.Foes[i].Ability != a) continue;
+                    return new Battle(Hero.Start(ch.StartLevel, "knight"), Rules.FoeFor(i.ToString(), ch), new FixedRng(rngValue));
                 }
             }
-            return run;
+            Assert.Fail("no foe with " + a);
+            return null;
         }
 
-        static bool IsHeal(ShopItem i) => i.Key == "potion" || i.Key == "elixir";
-
-        [Test]
-        public void TheBoardHasEveryKindOfTileAndCampFirst()
+        /// <summary>Plays the foe's clock up to its first ability turn.</summary>
+        static List<BattleEvent> ToAbility(Battle b)
         {
-            var b = DiceRun.MakeBoard(new Rng(1));
-            Assert.AreEqual(DiceRun.Size, b.Length);
-            Assert.AreEqual(TileKind.Start, b[0]);
-            Assert.AreEqual(9, b.Count(t => t == TileKind.Enemy));
-            Assert.AreEqual(2, b.Count(t => t == TileKind.Shop));
-            Assert.IsFalse(b.Skip(1).Take(3).Contains(TileKind.Elite));
-        }
-
-        [Test]
-        public void ARollWalksThatManyTilesAndCampPaysOnTheWay()
-        {
-            var run = new DiceRun("knight", 3);
-            var m = run.Roll(4);
-            CollectionAssert.AreEqual(new[] { 1, 2, 3, 4 }, m.Path);
-            Assert.AreEqual(4, run.Pos);
-            run.Pos = 22;
-            var gold = run.Hero.Gold;
-            m = run.Roll(3);
-            CollectionAssert.AreEqual(new[] { 23, 0, 1 }, m.Path);
-            Assert.AreEqual(2, run.Lap);
-            Assert.Greater(run.Hero.Gold, gold);
-            Assert.IsFalse(m.Boss);
-        }
-
-        [Test]
-        public void AfterTheLastLapTheBossStopsTheWalkAtCamp()
-        {
-            var run = new DiceRun("knight", 3) { Lap = DiceRun.LapsPerStage, Pos = 22 };
-            var m = run.Roll(5);
-            Assert.IsTrue(m.Boss);
-            Assert.AreEqual(0, run.Pos);
-            CollectionAssert.AreEqual(new[] { 23, 0 }, m.Path);
-        }
-
-        [Test]
-        public void AFightIsPlayedOutBlowByBlow()
-        {
-            var run = new DiceRun("ranger", 9);
-            var foe = run.MakeFoe(run.Chapter.Foes[0], false, false);
-            var f = run.Simulate(foe);
-            Assert.IsTrue(f.Won);
-            Assert.AreEqual(0, f.Beats.Last().FoeHp);
-            Assert.IsTrue(f.Beats.Zip(f.Beats.Skip(1), (a, b) => a.T <= b.T).All(x => x));
-            Assert.Greater(f.Beats.Count(b => b.ByHero), 2, "no foe falls to one or two blows");
-            Assert.Greater(run.Hero.Gold, 0);
-        }
-
-        [Test]
-        public void BeatingABossOpensTheNextWorld()
-        {
-            var run = new DiceRun("berserker", 5) { Lap = DiceRun.LapsPerStage + 1 };
-            run.Hero.Atk = 999;
-            run.Hero.Max = run.Hero.Hp = 9999;
-            var o = run.Land(new Move { Boss = true });
-            Assert.AreEqual(OutcomeKind.StageClear, o.Kind);
-            Assert.AreEqual(1, run.Stage);
-            Assert.AreEqual(1, run.Lap);
-            Assert.AreEqual(WorldData.Chapters[1], run.Chapter);
-        }
-
-        [Test]
-        public void TheShopSellsOnlyWhatYouCanPay()
-        {
-            var run = new DiceRun("knight", 2);
-            var item = new ShopItem("blade", "Blade", "", "", 30);
-            run.Hero.Gold = 20;
-            Assert.IsFalse(run.Buy(item));
-            run.Hero.Gold = 40;
-            var atk = run.Hero.Atk;
-            Assert.IsTrue(run.Buy(item));
-            Assert.AreEqual(10, run.Hero.Gold);
-            Assert.Greater(run.Hero.Atk, atk);
-            Assert.IsFalse(run.Buy(item), "sold once");
-        }
-
-        [Test]
-        public void EveryTileDoesSomethingAndNothingBreaks()
-        {
-            var kinds = new HashSet<OutcomeKind>();
-            for (var seed = 0; seed < 40; seed++)
+            var o = new List<BattleEvent>();
+            while (b.Attacks < Abilities.Every && !b.Over)
             {
-                var run = new DiceRun(Heroes.All[seed % 4].Id, seed);
-                while (!run.Over && run.Rolls < 400)
+                o.AddRange(b.Advance(0.05));
+                if (b.Windup) b.WindupLeft = 0;
+            }
+            return o;
+        }
+
+        [Test]
+        public void FifteenWorldsNinetyFoesAndEveryCreatureHasAnAbility()
+        {
+            Assert.AreEqual(15, WorldData.Chapters.Length);
+            var all = WorldData.Chapters.SelectMany(c => c.Foes.Concat(new[] { c.Boss })).ToList();
+            Assert.AreEqual(90, all.Count);
+            Assert.IsFalse(all.Any(f => f.Ability == FoeAbility.None));
+            Assert.AreEqual(8, all.Select(f => f.Ability).Distinct().Count());
+        }
+
+        [Test]
+        public void NoFoeFallsToOneBlow()
+        {
+            foreach (var ch in WorldData.Chapters)
+            {
+                var h = Hero.Start(ch.StartLevel + 4, "berserker");
+                for (var i = 0; i < 5; i++)
+                    Assert.Greater(Rules.FoeFor(i.ToString(), ch).Hp, h.Atk * 3, ch.Name + " foe " + i);
+                Assert.Greater(Rules.FoeFor("boss", ch).Hp, h.Atk * 25, ch.Name + " boss");
+            }
+        }
+
+        [Test]
+        public void EachAbilityDoesItsJob()
+        {
+            var regen = FightWith(FoeAbility.Regen);
+            regen.St.Hp = regen.Foe.Hp / 2;
+            ToAbility(regen);
+            Assert.Greater(regen.St.Hp, regen.Foe.Hp / 2);
+
+            var stone = FightWith(FoeAbility.StoneSkin);
+            ToAbility(stone);
+            Assert.AreEqual(3, stone.St.Shield);
+            var strike = (StrikeEvent)stone.Rep()[0];
+            Assert.Less(strike.Blows[0].Dmg, stone.Hero.Atk);
+
+            var hex = FightWith(FoeAbility.Hex);
+            hex.Charge = 6;
+            ToAbility(hex);
+            Assert.AreEqual(3, hex.Charge);
+
+            var venom = FightWith(FoeAbility.Venom);
+            ToAbility(venom);
+            var hp = venom.Hero.Hp;
+            var ticks = new List<BattleEvent>();
+            for (var i = 0; i < 20; i++) ticks.AddRange(venom.Advance(0.1));
+            Assert.IsTrue(ticks.OfType<FoeAbilityEvent>().Any(e => e.Tick));
+            Assert.Less(venom.Hero.Hp, hp);
+
+            var drain = FightWith(FoeAbility.Drain);
+            drain.St.Hp = drain.Foe.Hp / 2;
+            Assert.Greater(ToAbility(drain).OfType<FoeHitEvent>().First().Drained, 0);
+
+            var frenzy = FightWith(FoeAbility.Frenzy);
+            var calm = frenzy.St.Pace;
+            frenzy.St.Hp = frenzy.Foe.Hp / 3;
+            Assert.Less(frenzy.St.Pace, calm);
+
+            var dodge = FightWith(FoeAbility.Evasive, 0.01);
+            Assert.IsTrue(((StrikeEvent)dodge.Rep()[0]).Blows[0].Miss);
+        }
+
+        [Test]
+        public void ThreeQuickPushupsStaggerAHeavyBlow()
+        {
+            var ch = WorldData.Chapters[0];
+            var b = new Battle(Hero.Start(ch.StartLevel, "ranger"), Rules.FoeFor("boss", ch), new FixedRng(0.9));
+            var events = new List<BattleEvent>();
+            while (!b.Windup) events.AddRange(b.Advance(0.05));
+            Assert.IsInstanceOf<WindupEvent>(events.Last());
+            b.Rep();
+            b.Rep();
+            Assert.IsTrue(b.Rep().OfType<InterruptEvent>().Any());
+            Assert.IsFalse(b.Windup);
+        }
+
+        [Test]
+        public void AWholeRunEndsInVictoryOrDefeatAndVisitsEveryMode()
+        {
+            foreach (var cls in Content.Classes.Select(c => c.Id))
+            {
+                var run = new RunController(WorldData.Chapters[0], cls, 7);
+                var seen = new HashSet<RunMode>();
+                for (var i = 0; i < 20000 && !run.Finished; i++)
                 {
-                    var o = run.Land(run.Roll());
-                    kinds.Add(o.Kind);
-                    Assert.IsFalse(string.IsNullOrEmpty(o.Title));
-                    Assert.IsFalse(string.IsNullOrEmpty(o.Text), o.Kind.ToString());
-                    Assert.GreaterOrEqual(run.Hero.Hp, run.Over && !run.Won ? 0 : 1);
-                    Assert.GreaterOrEqual(run.Hero.Gold, 0);
+                    seen.Add(run.Mode);
+                    if (run.Mode == RunMode.Busy) run.Tick(0.2);
+                    else
+                    {
+                        run.Rep();
+                        run.Tick(0.4);
+                    }
                 }
-            }
-            CollectionAssert.IsSupersetOf(kinds, new[]
-            {
-                OutcomeKind.Fight, OutcomeKind.Buff, OutcomeKind.Curse, OutcomeKind.Treasure,
-                OutcomeKind.Luck, OutcomeKind.Shop, OutcomeKind.StageClear,
-            });
-        }
-
-        /// <summary>Balance: most runs clear the first world, few beat them all,
-        /// and every hero can get far.</summary>
-        [Test]
-        public void ARunIsWinnableButNotFree()
-        {
-            foreach (var h in Heroes.All)
-            {
-                var stages = Enumerable.Range(0, 200).Select(s => Play(h.Id, 1000 + s)).Select(r => r.Won ? 15 : r.Stage).ToList();
-                var clearFirst = stages.Count(s => s >= 1) / 200.0;
-                var all = stages.Count(s => s >= 15) / 200.0;
-                var avg = stages.Average();
-                Assert.That(clearFirst, Is.InRange(0.6, 0.98), h.Id + " clears world 1");
-                Assert.That(all, Is.LessThan(0.1), h.Id + " beats everything");
-                Assert.That(avg, Is.InRange(2.0, 9.0), h.Id + " average worlds");
+                Assert.IsTrue(run.Finished, cls);
+                CollectionAssert.IsSupersetOf(seen, new[] { RunMode.Walk, RunMode.Fight, RunMode.Pick, RunMode.Card });
+                Assert.Greater(run.Log.Count, 20);
             }
         }
 
         [Test]
-        public void ChapterNamesReadNaturally()
+        public void TheWheelWaitsForAPushupOrSpinsItself()
         {
+            var a = new RunController(WorldData.Chapters[0], "knight", 3);
+            for (var i = 0; i < 2000 && a.Mode != RunMode.Spin && !a.Finished; i++)
+            {
+                if (a.Mode == RunMode.Busy) a.Tick(0.3);
+                else { a.Rep(); a.Tick(0.05); }
+            }
+            Assert.AreEqual(RunMode.Spin, a.Mode);
+            a.Tick(RunController.SpinAuto - 1);
+            Assert.IsFalse(a.Overlay.Spinning);
+            a.Rep();
+            Assert.IsTrue(a.Overlay.Spinning);
+            Assert.AreEqual(RunMode.Busy, a.Mode);
+        }
+
+        [Test]
+        public void DayCountsReadNaturally()
+        {
+            Loc.Arabic = false;
+            Assert.AreEqual("1 day", Loc.Days(1));
+            Assert.AreEqual("39 days", Loc.Days(39));
             Loc.Arabic = true;
+            Assert.AreEqual("يوم واحد", Loc.Days(1));
+            Assert.AreEqual("يومان", Loc.Days(2));
+            Assert.AreEqual("7 أيام", Loc.Days(7));
+            Assert.AreEqual("30 يومًا", Loc.Days(30));
             Assert.AreEqual("الفصل الثاني عشر", Loc.Chapter(12, "Chapter XII"));
             Loc.Arabic = false;
             Assert.AreEqual("Chapter XII", Loc.Chapter(12, "Chapter XII"));
@@ -161,12 +170,18 @@ namespace DiceQuest.Tests
         [Test]
         public void ArabicLettersJoinAndReadRightToLeft()
         {
-            Assert.AreEqual("\uFE91\uFE8E\uFE8F", ArabicShaper.Shape("باب"));
-            Assert.AreEqual("\uFEFB", ArabicShaper.Shape("لا"));
+            // باب: initial beh, final alef, isolated beh (alef never joins left).
+            Assert.AreEqual("ﺑﺎﺏ", ArabicShaper.Shape("باب"));
+            // لا is one ligature.
+            Assert.AreEqual("ﻻ", ArabicShaper.Shape("لا"));
+            // Marks are dropped; numbers and Latin keep their order in the visual line.
+            Assert.AreEqual(ArabicShaper.Shape("كَ"), ArabicShaper.Shape("ك"));
+            // A keyword mark between letters does not break the join.
             Assert.AreEqual("\uFE91" + ArabicShaper.KeyOpen + "\uFE8E\uFE8F",
                 ArabicShaper.Shape("ب" + ArabicShaper.KeyOpen + "اب"));
-            Assert.IsTrue(ArabicShaper.Line("اليوم 12").StartsWith("12 "));
-            Assert.AreEqual("ATK +12%", ArabicShaper.Line("ATK +12%"));
+            var line = ArabicShaper.Line("اليوم 12");
+            Assert.IsTrue(line.StartsWith("12 "), line);
+            Assert.IsTrue(ArabicShaper.Line("ATK +12%").Equals("ATK +12%"));
         }
 
         [Test]
@@ -184,11 +199,27 @@ namespace DiceQuest.Tests
                     if (!Loc.Has(key)) missing.Add(Path.GetFileName(f) + ": " + key);
                 }
             }
-            var content = Heroes.All.SelectMany(h => new[] { h.Name, h.Perk })
-                .Concat(WorldData.Chapters.SelectMany(c => new[] { c.Name, c.Blurb }
-                    .Concat(c.Foes.Concat(new[] { c.Boss }).Select(f => f.Name))));
+            var content = new List<string>();
+            content.AddRange(Content.Skills.Values.SelectMany(s => new[] { s.Name, s.Text }));
+            content.AddRange(Content.Stories.SelectMany(s => new[] { s.Text, s.Effect.Tag }));
+            content.AddRange(Content.Wheel.Select(w => w.Label));
+            content.AddRange(Content.Choices.SelectMany(c => new[] { c.Text, c.A.Label, c.B.Label, c.A.Effect.Tag, c.B.Effect.Tag }));
+            content.AddRange(Content.LootTable.Select(l => l.Name));
+            content.AddRange(Content.Classes.SelectMany(c => new[] { c.Name, c.Special }));
+            content.AddRange(WorldData.Chapters.SelectMany(c => new[] { c.Name, c.Blurb }
+                .Concat(c.Foes.Concat(new[] { c.Boss }).SelectMany(f => new[] { f.Name, f.Quote }))));
+            content.AddRange(System.Enum.GetValues(typeof(FoeAbility)).Cast<FoeAbility>()
+                .Where(a => a != FoeAbility.None).Select(Abilities.Label));
             missing.AddRange(content.Where(s => !Loc.Has(s)).Select(s => "content: " + s));
             Assert.IsEmpty(missing, string.Join("\n", missing.Distinct()));
         }
+    }
+
+    /// <summary>Always the same number: makes a roll's outcome certain in a test.</summary>
+    sealed class FixedRng : Rng
+    {
+        readonly double _v;
+        public FixedRng(double v) : base(0) { _v = v; }
+        public override double Next() => _v;
     }
 }

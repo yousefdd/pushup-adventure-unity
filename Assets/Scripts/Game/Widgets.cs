@@ -1,10 +1,10 @@
 using System;
-using DiceQuest.Core;
+using PushupAdventure.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace DiceQuest.Game
+namespace PushupAdventure.Game
 {
     /// <summary>A rounded bar with a fill and an optional number on it.</summary>
     public sealed class Bar
@@ -142,49 +142,5 @@ namespace DiceQuest.Game
         }
 
         public static string RarityName(Rarity r) => Loc.Tr(r.ToString());
-    }
-
-    /// <summary>A die: a rounded white square with pips.</summary>
-    public sealed class Die
-    {
-        public readonly RectTransform Root;
-        readonly Image[] _pips = new Image[9];
-        readonly Image _face;
-
-        // Which of the 3×3 pip spots each face lights (0 = top left).
-        static readonly int[][] Faces =
-        {
-            new[] { 4 }, new[] { 2, 6 }, new[] { 2, 4, 6 }, new[] { 0, 2, 6, 8 },
-            new[] { 0, 2, 4, 6, 8 }, new[] { 0, 2, 3, 5, 6, 8 },
-        };
-
-        public Die(Transform parent, float size)
-        {
-            var rim = Ui.Panel(parent, "Die", Theme.Outline, (int)(size * 0.18f));
-            Root = rim.rectTransform;
-            Root.sizeDelta = new Vector2(size, size);
-            var shade = Ui.Panel(Root, "Shade", new Color(0.82f, 0.84f, 0.9f), (int)(size * 0.16f));
-            shade.rectTransform.Fill(size * 0.04f, size * 0.04f, size * 0.04f, size * 0.04f);
-            _face = Ui.Panel(Root, "Face", Color.white, (int)(size * 0.15f));
-            _face.rectTransform.Fill(size * 0.05f, size * 0.09f, size * 0.05f, size * 0.04f);
-            var pip = size * 0.17f;
-            for (var i = 0; i < 9; i++)
-            {
-                var x = (i % 3 - 1) * size * 0.26f;
-                var y = (1 - i / 3) * size * 0.26f;
-                _pips[i] = Ui.Img(_face.rectTransform, "Pip", Theme.Outline, Ui.Circle);
-                _pips[i].rectTransform.Place(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(x, y), new Vector2(pip, pip));
-            }
-            Set(1);
-        }
-
-        public void Set(int value)
-        {
-            var lit = Faces[Mathf.Clamp(value, 1, 6) - 1];
-            for (var i = 0; i < 9; i++) _pips[i].enabled = System.Array.IndexOf(lit, i) >= 0;
-            // Ones are red, like a real die.
-            if (value == 1) _pips[4].color = Theme.Danger;
-            else _pips[4].color = Theme.Outline;
-        }
     }
 }

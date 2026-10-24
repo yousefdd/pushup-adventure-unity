@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using DiceQuest.Core;
+using PushupAdventure.Core;
 using UnityEngine;
 
-namespace DiceQuest.Game
+namespace PushupAdventure.Game
 {
     /// <summary>The look of the game: colour roles and sizes (the same values as
     /// the Flutter version's tokens), fonts, pictures and sounds.</summary>

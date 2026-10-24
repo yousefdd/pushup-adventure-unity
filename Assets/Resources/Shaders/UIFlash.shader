@@ -1,6 +1,6 @@
 // Unity's default UI shader plus one value: _Flash blends the picture toward
 // white. Fighters use it to flash when they are hit.
-Shader "DiceQuest/UIFlash"
+Shader "PushupAdventure/UIFlash"
 {
     Properties
     {

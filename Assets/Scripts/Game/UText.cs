@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Text;
-using DiceQuest.Core;
+using PushupAdventure.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DiceQuest.Game
+namespace PushupAdventure.Game
 {
     /// <summary>A label that reads right in both languages. Unity's legacy text
     /// cannot join Arabic letters or run right to left, so Arabic is shaped
