@@ -92,6 +92,8 @@ jobs:
     name: Build WebGL preview
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
@@ -112,3 +114,14 @@ jobs:
         with:
           name: PushUpAdventure-webgl
           path: build/WebGL
+      # The preview also goes to the webgl-preview branch, so it can be
+      # fetched with plain git, served anywhere and recorded.
+      - name: Publish preview to the webgl-preview branch
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" build
+          cd build/WebGL/PushUpAdventure
+          git init -q -b webgl-preview
+          git add -A
+          git -c user.name="github-actions" -c user.email="github-actions@users.noreply.github.com" \
+            commit -q -m "WebGL preview of ${{ github.sha }}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" webgl-preview
