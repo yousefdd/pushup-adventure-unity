@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="9" result="Passed" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.1064357">
+  <test-suite type="TestSuite" id="1015" name="workspace" fullname="workspace" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.106436" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties />
+    <test-suite type="Assembly" id="1026" name="PushupAdventure.Tests.dll" fullname="/github/workspace/Library/ScriptAssemblies/PushupAdventure.Tests.dll" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.089771" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="126" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+      </properties>
+      <test-suite type="TestSuite" id="1027" name="PushupAdventure" fullname="PushupAdventure" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.089115" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1028" name="Tests" fullname="PushupAdventure.Tests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.085845" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1016" name="CoreTests" fullname="PushupAdventure.Tests.CoreTests" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.081828" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1024" name="ArabicLettersJoinAndReadRightToLeft" fullname="PushupAdventure.Tests.CoreTests.ArabicLettersJoinAndReadRightToLeft" methodname="ArabicLettersJoinAndReadRightToLeft" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="2001569731" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.014939" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1021" name="AWholeRunEndsInVictoryOrDefeatAndVisitsEveryMode" fullname="PushupAdventure.Tests.CoreTests.AWholeRunEndsInVictoryOrDefeatAndVisitsEveryMode" methodname="AWholeRunEndsInVictoryOrDefeatAndVisitsEveryMode" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="1688474617" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.024440" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1023" name="DayCountsReadNaturally" fullname="PushupAdventure.Tests.CoreTests.DayCountsReadNaturally" methodname="DayCountsReadNaturally" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="467097989" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.002551" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1019" name="EachAbilityDoesItsJob" fullname="PushupAdventure.Tests.CoreTests.EachAbilityDoesItsJob" methodname="EachAbilityDoesItsJob" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="1269034544" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.004884" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1025" name="EveryStringTheGameShowsHasArabic" fullname="PushupAdventure.Tests.CoreTests.EveryStringTheGameShowsHasArabic" methodname="EveryStringTheGameShowsHasArabic" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="1732730895" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.010937" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1017" name="FifteenWorldsNinetyFoesAndEveryCreatureHasAnAbility" fullname="PushupAdventure.Tests.CoreTests.FifteenWorldsNinetyFoesAndEveryCreatureHasAnAbility" methodname="FifteenWorldsNinetyFoesAndEveryCreatureHasAnAbility" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="1974995821" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.004276" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1018" name="NoFoeFallsToOneBlow" fullname="PushupAdventure.Tests.CoreTests.NoFoeFallsToOneBlow" methodname="NoFoeFallsToOneBlow" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="716396149" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.002743" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1022" name="TheWheelWaitsForAPushupOrSpinsItself" fullname="PushupAdventure.Tests.CoreTests.TheWheelWaitsForAPushupOrSpinsItself" methodname="TheWheelWaitsForAPushupOrSpinsItself" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="1161871543" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.002495" asserts="0">
+              <properties />
+            </test-case>
+            <test-case id="1020" name="ThreeQuickPushupsStaggerAHeavyBlow" fullname="PushupAdventure.Tests.CoreTests.ThreeQuickPushupsStaggerAHeavyBlow" methodname="ThreeQuickPushupsStaggerAHeavyBlow" classname="PushupAdventure.Tests.CoreTests" runstate="Runnable" seed="985740712" result="Passed" start-time="2026-10-24 13:50:34Z" end-time="2026-10-24 13:50:34Z" duration="0.002745" asserts="0">
+              <properties />
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
