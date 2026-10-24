@@ -1,0 +1,88 @@
+name: Android APK (IL2CPP)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Fails early, with a clear message, when the Unity licence secrets are missing.
+  license:
+    name: Check Unity licence secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Secrets present
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        run: |
+          missing=""
+          [ -z "$UNITY_LICENSE" ] && missing="$missing UNITY_LICENSE"
+          [ -z "$UNITY_EMAIL" ] && missing="$missing UNITY_EMAIL"
+          [ -z "$UNITY_PASSWORD" ] && missing="$missing UNITY_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing. See README.md, section 'Unity licence'."
+            exit 1
+          fi
+
+  test:
+    name: Edit mode tests
+    needs: license
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-test-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-test-
+      - uses: game-ci/unity-test-runner@v4
+        id: tests
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          testMode: editmode
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Test results
+          path: ${{ steps.tests.outputs.artifactsPath }}
+
+  android:
+    name: Build APK (IL2CPP, ARM64)
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      # Android IL2CPP builds need more room than the runner has free.
+      - uses: jlumbroso/free-disk-space@v1.3.1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-Android-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: Library-Android-
+      - uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: Android
+          androidExportType: androidPackage
+          buildName: PushUpAdventure
+          buildMethod: PushupAdventure.EditorTools.BuildScript.BuildFromCommandLine
+          versioning: Semantic
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PushUpAdventure-apk
+          path: build/Android

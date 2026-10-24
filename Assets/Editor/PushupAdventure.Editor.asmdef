@@ -1,0 +1,19 @@
+{
+    "name": "PushupAdventure.Editor",
+    "rootNamespace": "PushupAdventure.EditorTools",
+    "references": [
+        "PushupAdventure.Core",
+        "PushupAdventure.Game"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

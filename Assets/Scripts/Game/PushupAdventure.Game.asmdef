@@ -1,0 +1,17 @@
+{
+    "name": "PushupAdventure.Game",
+    "rootNamespace": "PushupAdventure.Game",
+    "references": [
+        "PushupAdventure.Core",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
