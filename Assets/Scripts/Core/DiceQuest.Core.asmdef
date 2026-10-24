@@ -1,10 +1,7 @@
 {
-    "name": "PushupAdventure.Game",
-    "rootNamespace": "PushupAdventure.Game",
-    "references": [
-        "PushupAdventure.Core",
-        "UnityEngine.UI"
-    ],
+    "name": "DiceQuest.Core",
+    "rootNamespace": "DiceQuest.Core",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -13,5 +10,5 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
-    "noEngineReferences": false
+    "noEngineReferences": true
 }

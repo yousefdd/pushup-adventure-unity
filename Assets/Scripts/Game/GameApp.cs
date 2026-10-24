@@ -1,9 +1,9 @@
-using PushupAdventure.Core;
+using DiceQuest.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace PushupAdventure.Game
+namespace DiceQuest.Game
 {
     /// <summary>Starts the game in any scene (the build's scene is empty): a
     /// camera, one canvas, the event system, and the home or run screen.</summary>
@@ -22,7 +22,7 @@ namespace PushupAdventure.Game
         static void Boot()
         {
             if (I != null) return;
-            var go = new GameObject("Push Up Adventure");
+            var go = new GameObject("Dice Quest");
             DontDestroyOnLoad(go);
             go.AddComponent<GameApp>();
         }
@@ -97,7 +97,7 @@ namespace PushupAdventure.Game
             if (Screen.safeArea != _lastSafe || Screen.width != _lastSize.x || Screen.height != _lastSize.y) Fit();
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (_screen is RunScreen) ShowHome();
+                if (_screen is BoardScreen) ShowHome();
                 else Application.Quit();
             }
         }
@@ -113,8 +113,7 @@ namespace PushupAdventure.Game
 
         public void ShowHome() => Swap<HomeScreen>(h => h.Build());
 
-        public void StartRun(ChapterDef chapter, string heroClass) =>
-            Swap<RunScreen>(r => r.Build(chapter, heroClass));
+        public void StartRun(string heroId) => Swap<BoardScreen>(r => r.Build(heroId));
 
         /// <summary>Switches language and rebuilds the screen that is showing.</summary>
         public void ToggleLanguage()
@@ -128,46 +127,33 @@ namespace PushupAdventure.Game
     /// <summary>What the game remembers between sessions.</summary>
     public static class Prefs
     {
-        public static string HeroClass = "knight";
-        public static int Chapter = 1;
+        public static string Hero = "knight";
 
         public static void Load()
         {
             Loc.Arabic = PlayerPrefs.GetInt("arabic", Application.systemLanguage == SystemLanguage.Arabic ? 1 : 0) == 1;
             Theme.Muted = PlayerPrefs.GetInt("muted", 0) == 1;
-            HeroClass = PlayerPrefs.GetString("class", "knight");
-            Chapter = Mathf.Clamp(PlayerPrefs.GetInt("chapter", 1), 1, WorldData.Chapters.Length);
+            Hero = PlayerPrefs.GetString("hero", "knight");
         }
 
         public static void Save()
         {
             PlayerPrefs.SetInt("arabic", Loc.Arabic ? 1 : 0);
             PlayerPrefs.SetInt("muted", Theme.Muted ? 1 : 0);
-            PlayerPrefs.SetString("class", HeroClass);
-            PlayerPrefs.SetInt("chapter", Chapter);
+            PlayerPrefs.SetString("hero", Hero);
             PlayerPrefs.Save();
         }
 
-        /// <summary>Chapters cleared, in order: the next one is open.</summary>
-        public static int Cleared
+        /// <summary>The furthest world reached (1-based), over all runs.</summary>
+        public static int BestWorld
         {
-            get => PlayerPrefs.GetInt("cleared", 0);
+            get => PlayerPrefs.GetInt("best_world", 0);
             set
             {
-                PlayerPrefs.SetInt("cleared", Mathf.Max(Cleared, value));
+                if (value <= BestWorld) return;
+                PlayerPrefs.SetInt("best_world", value);
                 PlayerPrefs.Save();
             }
-        }
-
-        public static bool Open(ChapterDef c) => c.Number <= Cleared + 1;
-
-        public static int Best(ChapterDef c) => PlayerPrefs.GetInt("best_" + c.Id, 0);
-
-        public static void SetBest(ChapterDef c, int days)
-        {
-            if (days <= Best(c)) return;
-            PlayerPrefs.SetInt("best_" + c.Id, days);
-            PlayerPrefs.Save();
         }
     }
 }

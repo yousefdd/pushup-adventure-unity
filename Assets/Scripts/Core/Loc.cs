@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace PushupAdventure.Core
+namespace DiceQuest.Core
 {
     /// <summary>English is the key; Arabic comes from LocAr (generated from the
     /// Flutter app). {name} slots are filled after the lookup.</summary>

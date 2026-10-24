@@ -94,12 +94,12 @@ jobs:
         with:
           targetPlatform: Android
           androidExportType: androidPackage
-          buildName: PushUpAdventure
-          buildMethod: PushupAdventure.EditorTools.BuildScript.BuildFromCommandLine
+          buildName: DiceQuest
+          buildMethod: DiceQuest.EditorTools.BuildScript.BuildFromCommandLine
           versioning: Semantic
       - uses: actions/upload-artifact@v4
         with:
-          name: PushUpAdventure-apk
+          name: DiceQuest-apk
           path: build/Android
       - name: Push logs to the ci-logs-android branch
         if: always()
@@ -127,11 +127,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           targetPlatform: WebGL
-          buildName: PushUpAdventure
-          buildMethod: PushupAdventure.EditorTools.BuildScript.BuildWebGLFromCommandLine
+          buildName: DiceQuest
+          buildMethod: DiceQuest.EditorTools.BuildScript.BuildWebGLFromCommandLine
       - uses: actions/upload-artifact@v4
         with:
-          name: PushUpAdventure-webgl
+          name: DiceQuest-webgl
           path: build/WebGL
       - name: Push logs to the ci-logs-webgl branch
         if: always()
@@ -143,7 +143,7 @@ jobs:
       - name: Publish preview to the webgl-preview branch
         run: |
           sudo chown -R "$(id -u):$(id -g)" build
-          cd build/WebGL/PushUpAdventure
+          cd build/WebGL/DiceQuest
           git init -q -b webgl-preview
           git add -A
           git -c user.name="github-actions" -c user.email="github-actions@users.noreply.github.com" \

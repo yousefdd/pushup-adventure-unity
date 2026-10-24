@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace PushupAdventure.Game
+namespace DiceQuest.Game
 {
     /// <summary>Builds the interface in code: rectangles, rounded panels,
     /// labels and candy buttons. There are no prefabs or scene files to edit.</summary>

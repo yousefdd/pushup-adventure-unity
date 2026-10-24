@@ -1,10 +1,10 @@
 {
-    "name": "PushupAdventure.Tests",
-    "rootNamespace": "PushupAdventure.Tests",
+    "name": "DiceQuest.Tests",
+    "rootNamespace": "DiceQuest.Tests",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "PushupAdventure.Core"
+        "DiceQuest.Core"
     ],
     "includePlatforms": [
         "Editor"

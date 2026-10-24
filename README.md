@@ -1,8 +1,13 @@
-# Push Up Adventure (Unity, IL2CPP)
+# Dice Quest (Unity, IL2CPP)
 
-A pushup adventure game for Android. Every pushup moves you one day down the
-road, or lands one blow in a fight. Fifteen worlds, ninety creatures, four
-heroes, skills, a lucky wheel, chests and choices. English and Arabic.
+A board roguelike for Android. Tap to roll the die; your hero hops around a
+ring of 24 tiles and every tile is an event: a creature to fight (the fight
+plays itself), an elite, a blessing, a curse, a chest, a shop or a lucky
+roll. After two laps the world's boss waits at camp. Beat it and the next of
+fifteen worlds opens, with stronger creatures. Four heroes, English and Arabic.
+
+The pushup adventure that used to live here is kept on the `pushup-game`
+branch.
 
 The game is built with Unity 2022.3 LTS. The APK uses the **IL2CPP** scripting
 backend: the C# code is converted to C++ and compiled to native ARM64 machine
@@ -12,8 +17,8 @@ code. GitHub Actions builds it.
 
 1. Add the three Unity licence secrets (see below). This is a one-time step.
 2. Push to `main`, or open **Actions → Android APK (IL2CPP) → Run workflow**.
-3. When the run is green, download the **PushUpAdventure-apk** artifact from
-   the run page. Unzip it and install `PushUpAdventure.apk` on an Android phone
+3. When the run is green, download the **DiceQuest-apk** artifact from
+   the run page. Unzip it and install `DiceQuest.apk` on an Android phone
    (Android 7.0 or newer, 64-bit).
 
 The APK is signed with Unity's debug key. That is fine for installing it on
@@ -49,9 +54,9 @@ them, and never paste them into an issue or a chat.
 
 1. **Check Unity licence secrets**: stops with a clear message if one is missing.
 2. **Edit mode tests**: the game rules (`Assets/Tests/EditMode`), in Unity.
-3. **Build APK (IL2CPP, ARM64)**: `PushupAdventure.EditorTools.BuildScript`
+3. **Build APK (IL2CPP, ARM64)**: `DiceQuest.EditorTools.BuildScript`
    creates the scene, sets IL2CPP, ARM64, Android 7.0+ and portrait, and
-   builds `build/Android/PushUpAdventure.apk`.
+   builds `build/Android/DiceQuest.apk`.
 
 The version number comes from git tags (game-ci's `Semantic` versioning): tag
 a commit `v1.2` and the next builds are `1.2.x`.
@@ -60,7 +65,7 @@ a commit `v1.2` and the next builds are `1.2.x`.
 
 | Path | What it holds |
 | --- | --- |
-| `Assets/Scripts/Core` | The rules in plain C#, with no UnityEngine: battle, run, worlds, skills, loot, translations, Arabic shaping |
+| `Assets/Scripts/Core` | The rules in plain C#, with no UnityEngine: board, dice, fights, shop, worlds, translations, Arabic shaping |
 | `Assets/Scripts/Game` | The Unity side: the interface, built in code, plus animation and sound |
 | `Assets/Editor/BuildScript.cs` | The IL2CPP Android build |
 | `Assets/Tests/EditMode` | Tests for the rules |
@@ -75,8 +80,8 @@ builds the whole interface in code.
 1. Install Unity **2022.3.62f2** with **Android Build Support** (including the
    Android SDK, NDK and OpenJDK) from Unity Hub.
 2. **Open** this folder in Unity Hub.
-3. Press Play. Space, Enter or a tap is one pushup.
-4. To build on your computer, use the menu **Push Up Adventure → Build Android
+3. Press Play. Tap (or press Space) to roll.
+4. To build on your computer, use the menu **Dice Quest → Build Android
    APK (IL2CPP)**. The APK goes to `Builds/Android/`.
 
 ## Arabic
@@ -110,36 +115,13 @@ them in `Assets/Resources/Fonts`. The art and sounds are the game's own.
 
 ---
 
-# مغامرة الضغط (Unity مع IL2CPP)
+# رحلة النرد (Unity مع IL2CPP)
 
-لعبة مغامرة بتمارين الضغط على أندرويد: كل ضغطة تنقلك يومًا على الطريق أو
-تضرب ضربة في القتال. فيها 15 عالمًا و90 مخلوقًا و4 أبطال، بالعربية
-والإنجليزية.
+لعبة لوحة ونرد لأندرويد: المس الشاشة لرمي النرد، فيتقدم بطلك على 24 مربعًا،
+وكل مربع حدث: وحش تقاتله (القتال تلقائي)، أو عدو نخبة، أو بركة، أو لعنة، أو
+صندوق كنز، أو متجر، أو رمية حظ. بعد جولتين ينتظرك زعيم العالم عند المعسكر؛
+اهزمه لينفتح العالم التالي من 15 عالمًا. أربعة أبطال، بالعربية والإنجليزية.
 
-اللعبة مبنية بـ Unity 2022.3، والـ APK يستعمل **IL2CPP**: يتحول كود C# إلى
-C++ ثم يُترجَم إلى كود آلة أصلي لمعالجات ARM64. البناء يتم على GitHub
-Actions.
+لعبة الضغط السابقة محفوظة في الفرع `pushup-game`.
 
-## كيف تحصل على الـ APK
-
-1. أضف أسرار ترخيص Unity الثلاثة (مرة واحدة فقط).
-2. ادفع إلى فرع `main`، أو افتح **Actions → Android APK (IL2CPP) → Run workflow**.
-3. عندما ينجح التشغيل، نزّل الملف **PushUpAdventure-apk** من صفحة التشغيل، وفك
-   الضغط، وثبّت `PushUpAdventure.apk` على هاتف أندرويد (7.0 أو أحدث).
-
-## ترخيص Unity
-
-في المستودع: **Settings → Secrets and variables → Actions → New repository
-secret**، وأضف:
-
-- `UNITY_EMAIL`: بريد حساب Unity.
-- `UNITY_PASSWORD`: كلمة مرور حساب Unity (يُفضَّل أن تكون حروفًا وأرقامًا فقط).
-- `UNITY_LICENSE`: محتوى ملف `Unity_lic.ulf` كاملًا.
-
-للحصول على الملف: ثبّت Unity Hub وسجّل الدخول، ثم **Preferences → Licenses →
-Add → Get a free personal license**. على ويندوز تجده في
-`C:\ProgramData\Unity\Unity_lic.ulf`. افتحه بمحرر نصوص والصق محتواه كله في
-السر `UNITY_LICENSE`.
-
-ضع بريدك وكلمة مرورك في أسرار GitHub المشفرة فقط، ولا تضعها في الكود أو في
-أي محادثة.
+يتحول كود C# عبر **IL2CPP** إلى C++ ثم إلى كود آلة ARM64، والبناء على GitHub Actions.

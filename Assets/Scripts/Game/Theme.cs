@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using PushupAdventure.Core;
+using DiceQuest.Core;
 using UnityEngine;
 
-namespace PushupAdventure.Game
+namespace DiceQuest.Game
 {
     /// <summary>The look of the game: colour roles and sizes (the same values as
     /// the Flutter version's tokens), fonts, pictures and sounds.</summary>
@@ -108,8 +108,10 @@ namespace PushupAdventure.Game
 
         /// <summary>Display type for titles and numbers, body type for reading;
         /// Arabic gets fonts drawn for it.</summary>
-        public static Font Font(bool display) =>
-            Loc.Arabic
+        public static Font Font(bool display) => Font(display, Loc.Arabic);
+
+        public static Font Font(bool display, bool arabic) =>
+            arabic
                 ? LoadFont(display ? "Lalezar-Regular" : "Tajawal-ExtraBold")
                 : LoadFont(display ? "LilitaOne-Regular" : "nunito_extrabold");
 

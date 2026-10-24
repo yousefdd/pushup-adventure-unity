@@ -1,9 +1,9 @@
 {
-    "name": "PushupAdventure.Editor",
-    "rootNamespace": "PushupAdventure.EditorTools",
+    "name": "DiceQuest.Editor",
+    "rootNamespace": "DiceQuest.EditorTools",
     "references": [
-        "PushupAdventure.Core",
-        "PushupAdventure.Game"
+        "DiceQuest.Core",
+        "DiceQuest.Game"
     ],
     "includePlatforms": [
         "Editor"

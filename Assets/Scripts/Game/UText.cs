@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Text;
-using PushupAdventure.Core;
+using DiceQuest.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PushupAdventure.Game
+namespace DiceQuest.Game
 {
     /// <summary>A label that reads right in both languages. Unity's legacy text
     /// cannot join Arabic letters or run right to left, so Arabic is shaped
@@ -75,9 +75,11 @@ namespace PushupAdventure.Game
         {
             if (_t == null) return;
             _arabicWas = Loc.Arabic;
-            _t.font = Theme.Font(_display);
             var marked = Mark(_logical);
-            var rtl = Loc.Arabic && ArabicShaper.HasArabic(marked);
+            // Arabic words get the Arabic font and shaping in either language
+            // (the language button shows "العربية" on the English screen).
+            var rtl = ArabicShaper.HasArabic(marked);
+            _t.font = Theme.Font(_display, Loc.Arabic || rtl);
             _t.alignment = rtl ? Mirror(_anchor) : _anchor;
             _width = ((RectTransform)transform).rect.width;
             if (!rtl)

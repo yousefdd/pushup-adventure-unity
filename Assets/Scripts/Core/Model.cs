@@ -1,8 +1,8 @@
-// The game's data: creatures, worlds, classes, skills, events. Pure C# with no
-// UnityEngine, so the rules compile and test anywhere (see Assets/Tests).
+// The worlds and their creatures. Pure C# with no UnityEngine, so the rules
+// compile and test anywhere (see Assets/Tests).
 using System;
 
-namespace PushupAdventure.Core
+namespace DiceQuest.Core
 {
     public enum Rarity { Common, Uncommon, Rare, Epic, Legendary, Mythic }
 
@@ -69,88 +69,5 @@ namespace PushupAdventure.Core
 
         public string Far => "bg_" + Id + "_far";
         public string Near => "bg_" + Id + "_near";
-    }
-
-    public sealed class HeroClass
-    {
-        public readonly string Id, Name, Special, SpecialText;
-        public readonly double CritChance, CritMult, Power, Xp, LootLuck;
-
-        public HeroClass(string id, string name, string special, string specialText, double critChance = 0,
-            double critMult = 2, double power = 1, double xp = 1, double lootLuck = 0)
-        {
-            Id = id; Name = name; Special = special; SpecialText = specialText; CritChance = critChance;
-            CritMult = critMult; Power = power; Xp = xp; LootLuck = lootLuck;
-        }
-
-        public string Sprite => "hero_" + Id;
-    }
-
-    public sealed class Skill
-    {
-        public readonly string Key, Name, Text;
-        public readonly Rarity Rarity;
-
-        public Skill(string key, string name, string text, Rarity rarity = Rarity.Common)
-        {
-            Key = key; Name = name; Text = text; Rarity = rarity;
-        }
-    }
-
-    public sealed class Effect
-    {
-        public readonly string Tag;
-        public readonly Action<Hero> Apply;
-
-        public Effect(string tag, Action<Hero> apply) { Tag = tag; Apply = apply; }
-    }
-
-    public sealed class Story
-    {
-        public readonly string Text;
-        public readonly Effect Effect;
-
-        public Story(string text, Effect effect) { Text = text; Effect = effect; }
-    }
-
-    public sealed class WheelSlice
-    {
-        public readonly string Label;
-        public readonly Action<Hero> Apply;
-        public readonly int Xp;
-        public readonly bool Skill;
-
-        public WheelSlice(string label, Action<Hero> apply = null, int xp = 0, bool skill = false)
-        {
-            Label = label; Apply = apply; Xp = xp; Skill = skill;
-        }
-    }
-
-    public sealed class ChoiceOption
-    {
-        public readonly string Label;
-        public readonly Effect Effect;
-
-        public ChoiceOption(string label, Effect effect) { Label = label; Effect = effect; }
-    }
-
-    public sealed class Choice
-    {
-        public readonly string Text;
-        public readonly ChoiceOption A, B;
-
-        public Choice(string text, ChoiceOption a, ChoiceOption b) { Text = text; A = a; B = b; }
-    }
-
-    public sealed class Loot
-    {
-        public readonly Rarity Rarity;
-        public readonly string Img, Name, Stat;
-        public readonly int V;
-
-        public Loot(Rarity rarity, string img, string name, string stat, int v)
-        {
-            Rarity = rarity; Img = img; Name = name; Stat = stat; V = v;
-        }
     }
 }
